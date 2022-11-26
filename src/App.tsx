@@ -1,4 +1,4 @@
-import { Component, Key } from "react";
+import { Component } from "react";
 import "./App.css";
 
 type MyState = {
