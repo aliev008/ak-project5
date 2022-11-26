@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { CardList, SearchBox } from "./components";
 import "./App.css";
 
 type MyState = {
@@ -24,7 +25,6 @@ class App extends Component<any, MyState> {
 
   searchFieldHandler(e: any): void {
     const value = (e.target as HTMLInputElement).value;
-    console.log({ value, this: this });
     this.setState({ searchFieldValue: value });
   }
 
@@ -37,15 +37,12 @@ class App extends Component<any, MyState> {
     });
     return (
       <div className="App">
-        <input
-          type="search"
-          className="search-box"
+        <SearchBox
           placeholder="search monsters"
-          onChange={searchFieldHandler}
+          className="search-box"
+          onChangeHandler={searchFieldHandler}
         />
-        {newMonstersList.map((monster: { id: number; name: string }) => (
-          <h1 key={monster.id}>{monster.name}</h1>
-        ))}
+        <CardList monsters={newMonstersList} />
       </div>
     );
   }
