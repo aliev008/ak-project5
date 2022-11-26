@@ -2,32 +2,50 @@ import { Component, Key } from "react";
 import "./App.css";
 
 type MyState = {
-  monsters: [];
-}
+  monsters: any[];
+  searchInput: string;
+};
 
 class App extends Component<any, MyState> {
   constructor(props: any) {
     super(props);
     this.state = {
       monsters: [],
+      searchInput: "",
     };
-    console.log(`constructor`);
   }
 
   componentDidMount(): void {
-    console.log(`componentDidMount`);
-    fetch('https://jsonplaceholder.typicode.com/users')
-    .then((resp) => resp.json())
-    .then((users) => this.setState({monsters: users}, () => console.log(users)));
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then((resp) => resp.json())
+      .then((users) => this.setState({ monsters: users }));
+  }
+
+  filterMonsters(e: any): void {
+    const value = (e.target as HTMLInputElement).value;
+    this.setState({ searchInput: value });
   }
 
   render() {
-    console.log(`render`);
-    const {monsters} = this.state;
+    const { monsters, searchInput } = this.state;
+    const regex = new RegExp(searchInput, "gi");
+    const currentMonstersList = monsters.slice();
+    const newMonstersList = currentMonstersList.filter((monster) => {
+      return regex.test(monster.name);
+    });
     return (
       <div className="App">
-        <input />
-        {monsters.map((monster: {id: number, name: string}) => <h1 key={monster.id}>{monster.name}</h1>)}
+        <input
+          type="search"
+          className="search-box"
+          placeholder="search monsters"
+          onChange={(e) => this.filterMonsters(e)}
+        />
+        {(searchInput !== "" ? newMonstersList : monsters).map(
+          (monster: { id: number; name: string }) => (
+            <h1 key={monster.id}>{monster.name}</h1>
+          )
+        )}
       </div>
     );
   }
