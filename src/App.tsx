@@ -1,52 +1,40 @@
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import { CardList, SearchBox } from "./components";
 import "./App.css";
 
-type MyState = {
-  monsters: any[];
-  searchFieldValue: string;
-};
+export const App = () => {
+  const [searchFieldValue, setSearchFieldValue] = useState("");
+  const [monsters, setMonsters] = useState([]);
+  const [filteredMonstersList, setFilteredMonstersList] = useState([]);
 
-class App extends Component<any, MyState> {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      monsters: [],
-      searchFieldValue: "",
-    };
-    this.searchFieldHandler = this.searchFieldHandler.bind(this);
-  }
+  const searchFieldHandler = (event: any) => {
+    const value = (event.target as HTMLInputElement).value;
+    setSearchFieldValue(value);
+  };
 
-  componentDidMount(): void {
+  useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/users")
       .then((resp) => resp.json())
-      .then((users) => this.setState({ monsters: users }));
-  }
+      .then((users) => setMonsters(users));
+  }, []);
 
-  searchFieldHandler(e: any): void {
-    const value = (e.target as HTMLInputElement).value;
-    this.setState({ searchFieldValue: value });
-  }
-
-  render() {
-    const { monsters, searchFieldValue } = this.state;
-    const { searchFieldHandler } = this;
+  useEffect(() => {
     const regex = new RegExp(searchFieldValue, "gi");
-    const newMonstersList = monsters.filter((monster) => {
+    const newMonstersList = monsters.filter((monster: any) => {
       return regex.test(monster.name);
     });
-    return (
-      <div className="App">
-        <h1 className="title">Monsters List</h1>
-        <SearchBox
-          placeholder="search monsters"
-          className="search-box"
-          onChangeHandler={searchFieldHandler}
-        />
-        <CardList monsters={newMonstersList} />
-      </div>
-    );
-  }
-}
+    setFilteredMonstersList(newMonstersList);
+  }, [searchFieldValue, monsters]);
 
-export default App;
+  return (
+    <div className="App">
+      <h1 className="title">Monsters List</h1>
+      <SearchBox
+        placeholder="search monsters"
+        className="search-box"
+        onChangeHandler={searchFieldHandler}
+      />
+      <CardList monsters={filteredMonstersList} />
+    </div>
+  );
+};
