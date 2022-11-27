@@ -37,6 +37,7 @@ class App extends Component<any, MyState> {
     });
     return (
       <div className="App">
+        <h1 className="title">Monsters List</h1>
         <SearchBox
           placeholder="search monsters"
           className="search-box"
