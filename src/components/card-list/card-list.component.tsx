@@ -1,7 +1,9 @@
 import { Card } from ".././card/card.component";
 import "./card-list.styles.css";
+import { Monster } from "../../App";
+
 type CardListProps = {
-  monsters: any[];
+  monsters: Monster[];
 };
 
 export const CardList = ({ monsters }: CardListProps) => {

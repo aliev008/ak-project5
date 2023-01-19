@@ -1,30 +1,42 @@
-import { useState, useEffect } from "react";
-import { CardList, SearchBox } from "./components";
-import "./App.css";
+import { useState, useEffect, ChangeEvent } from 'react'
+import { CardList, SearchBox } from './components'
+import { getData } from './utils/data.utils'
+import './App.css'
+
+export type Monster = {
+  name: string
+  email: string
+  id: number
+}
 
 export const App = () => {
-  const [searchFieldValue, setSearchFieldValue] = useState("");
-  const [monsters, setMonsters] = useState([]);
-  const [filteredMonstersList, setFilteredMonstersList] = useState([]);
+  const [searchFieldValue, setSearchFieldValue] = useState('')
+  const [monsters, setMonsters] = useState<Monster[]>([])
+  const [filteredMonstersList, setFilteredMonstersList] = useState<Monster[]>([])
 
-  const searchFieldHandler = (event: any) => {
-    const value = (event.target as HTMLInputElement).value;
-    setSearchFieldValue(value);
-  };
-
-  useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/users")
-      .then((resp) => resp.json())
-      .then((users) => setMonsters(users));
-  }, []);
+  const searchFieldHandler = (event: ChangeEvent<HTMLInputElement>): void => {
+    const value = (event.target as HTMLInputElement).value
+    setSearchFieldValue(value)
+  }
 
   useEffect(() => {
-    const regex = new RegExp(searchFieldValue, "gi");
+    const fetchUsers = async () => {
+      const users = await getData<Monster[]>(
+        'https://jsonplaceholder.typicode.com/users'
+      )
+      setMonsters(users)
+    }
+
+    fetchUsers();
+  }, [])
+
+  useEffect(() => {
+    const regex = new RegExp(searchFieldValue, 'gi')
     const newMonstersList = monsters.filter((monster: any) => {
-      return regex.test(monster.name);
-    });
-    setFilteredMonstersList(newMonstersList);
-  }, [searchFieldValue, monsters]);
+      return regex.test(monster.name)
+    })
+    setFilteredMonstersList(newMonstersList)
+  }, [searchFieldValue, monsters])
 
   return (
     <div className="App">
@@ -36,5 +48,5 @@ export const App = () => {
       />
       <CardList monsters={filteredMonstersList} />
     </div>
-  );
-};
+  )
+}
